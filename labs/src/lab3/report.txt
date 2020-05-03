@@ -1,0 +1,30 @@
+Names: Jae Woo Ok, Ruomin Wang
+NetIDs: jwo739, rwz8980
+
+a. What is the goal for the optimization, and briefly describe the changes you made in the source files for that optimization. 
+The goal of the optimization was to reduce the performance of the histogram creation code. We made changes to the opt_2dhisto.cu file
+so that the opt_2dhisto function would call a kernel code for opt_stoprollover_Kernel (which prevents the count from rolling over 255)
+and the opt_2dhisto_Kernel function would actually create the histogram, and add 1 to the right bin through atomicAdd. 
+The rest of the file are the communication functions from the device memory to the gpu memory. In the opt_2dhisto.h file is
+where we placed out headers. Finally, in the test_harness.cpp file, we wrote code for the setup and teardown and called functions from 
+opt_2dhisto.h. 
+
+b. Any difficulties with completing the optimization correctly. 
+Without setting the bins to a default of 0, the tests would not pass because there might have been some unnecessary/wrong values
+inside the bins. In addition, atomicAdd must be used because a bin might not be updated if two cores try to write to the same bin at
+the same time. There was also a small issue setting the size of the bin and grids for the kernel operations as some sizes
+would slow down the operation, but the issue was solved. 
+
+c. The man-hours spent developing the optimization (even if it was abandoned or not working). This will be an indication of the optimization’s difficulty. 
+The optimization took around 15 man-hours to implement. 
+
+d. If finished and working, the speedup of the code after the optimization was applied.
+    Timing 'ref_2dhisto' started
+        GetTimeOfDay Time (for 1000 iterations) = 11.038
+        Clock Time        (for 1000 iterations) = 11.01
+    Timing 'ref_2dhisto' ended
+    Timing 'opt_2dhisto' started
+        GetTimeOfDay Time (for 1000 iterations) = 0.73
+        Clock Time        (for 1000 iterations) = 0.73
+    Timing 'opt_2dhisto' ended
+This is a sample result from the code. 11.038s/0.73s = 15.12x faster. 
