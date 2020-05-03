@@ -1,0 +1,21 @@
+Names: Jae Woo Ok, Ruomin Wang
+NetIDs: jwo739, rwz8980
+
+(a)
+**===-------------------------------------------------===**
+Processing 16777216 elements...
+Host CPU Processing time: 46.498001 (ms)
+CUDA Processing time: 5.519000 (ms)
+Speedup: 8.425077X
+Test PASSED
+
+(b)
+Flag checks for array of not power of two. 
+Not power of 2 = Last block not full
+Fill last block with N zeroes, where (1) N is power of 2 and (2) N > the number of element in the last block 
+Set shared memory size as (2 * numThreadsLastBlock + (2 * numThreadsLastBlock) / NUM_BANKS)) so cannot be divided by the number of banks 
+
+(c)
+The time complexity is O(n) for CPU and O(2n) for GPU.
+CPU: 16777216/(46/1000) = 3.6*10^8, bottleneck : Mem access
+GPU: 2*16777216/(5.518/1000) = 6*10^9, bottleneck : Num threads/blocks
